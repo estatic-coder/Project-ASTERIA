@@ -12,6 +12,7 @@ const createWindow = () => {
     backgroundColor: '#04060e',
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 14, y: 13 },
+    icon: path.join(__dirname, process.env.VITE_DEV_SERVER_URL ? '../../public/logo.png' : '../dist/logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -109,6 +110,9 @@ ipcMain.handle('ollama:listModels', async () => {
 });
 
 // ─── App Lifecycle ────────────────────────────────────────────────
+
+app.commandLine.appendSwitch('disable-logging');
+app.commandLine.appendSwitch('v', '0');
 
 app.on('ready', createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });

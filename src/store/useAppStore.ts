@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { FileNode } from '../core/AsteriaAPI';
 
-export type AppMode = 'home' | 'code' | 'research' | 'writing' | 'analysis';
+export type AppMode = 'home' | 'code' | 'image' | 'analysis';
 
 export type OracleStatus = 'idle' | 'observing' | 'thinking' | 'planning' | 'executing' | 'completed' | 'failed';
 
@@ -118,7 +118,7 @@ export const useAppStore = create<AppState>()(
       oracleStatus: 'idle',
       currentModel: 'qwen3:8b',
       availableModels: [],
-      conversations: { home: [], code: [], research: [], writing: [], analysis: [] },
+      conversations: { home: [], code: [], image: [], analysis: [] },
       setOracleStatus: (s) => set({ oracleStatus: s }),
       setCurrentModel: (m) => set({ currentModel: m }),
       setAvailableModels: (models) => set({ availableModels: models }),

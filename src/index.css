@@ -6,24 +6,24 @@
 
 /* ─── Design Tokens ────────────────────────────────────────────── */
 :root {
-  --bg-void:        #04060e;
-  --bg-deep:        #070b18;
-  --bg-surface:     #0c1122;
-  --bg-elevated:    #111827;
-  --bg-panel:       #0d1420;
-  --bg-card:        #131c2e;
+  --bg-void:        #080808;
+  --bg-deep:        #0a0a0a;
+  --bg-surface:     #0e0e0e;
+  --bg-elevated:    #141414;
+  --bg-panel:       #111111;
+  --bg-card:        #1a1a1a;
 
-  --border-subtle:  rgba(139, 92, 246, 0.12);
-  --border-dim:     rgba(139, 92, 246, 0.20);
-  --border-glow:    rgba(139, 92, 246, 0.45);
+  --border-subtle:  rgba(163, 163, 163, 0.12);
+  --border-dim:     rgba(163, 163, 163, 0.20);
+  --border-glow:    rgba(163, 163, 163, 0.45);
 
-  --accent-violet:  #8b5cf6;
-  --accent-indigo:  #6366f1;
-  --accent-blue:    #3b82f6;
-  --accent-cyan:    #06b6d4;
-  --accent-glow:    rgba(139, 92, 246, 0.35);
+  --accent-violet:  #a3a3a3;
+  --accent-indigo:  #737373;
+  --accent-blue:    #737373;
+  --accent-cyan:    #737373;
+  --accent-glow:    rgba(163, 163, 163, 0.35);
 
-  --text-primary:   #e8e4ff;
+  --text-primary:   #ffffff;
   --text-secondary: #a89fc8;
   --text-muted:     #5c5478;
   --text-ghost:     #3a3356;
@@ -31,7 +31,7 @@
   --shadow-sm:      0 1px 8px rgba(0,0,0,0.6);
   --shadow-md:      0 4px 24px rgba(0,0,0,0.7);
   --shadow-lg:      0 8px 48px rgba(0,0,0,0.8);
-  --shadow-glow:    0 0 30px rgba(139,92,246,0.25);
+  --shadow-glow:    0 0 30px rgba(163,163,163,0.25);
 }
 
 /* ─── Base Reset ───────────────────────────────────────────────── */
@@ -54,16 +54,16 @@ body {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(163, 163, 163, 0.2);
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
+  background: rgba(163, 163, 163, 0.5);
 }
 
 /* ─── Selection ─────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(163, 163, 163, 0.35);
   color: #fff;
 }
 
@@ -84,18 +84,47 @@ body {
 
 /* ─── Glow Effects ──────────────────────────────────────────────── */
 .glow-violet {
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.25),
-              0 0 60px rgba(139, 92, 246, 0.08);
+  box-shadow: 0 0 20px rgba(163, 163, 163, 0.25),
+              0 0 60px rgba(163, 163, 163, 0.08);
 }
 
 .glow-violet-text {
-  text-shadow: 0 0 20px rgba(139, 92, 246, 0.7);
+  text-shadow: 0 0 20px rgba(163, 163, 163, 0.7);
 }
 
 .glow-border {
   border-color: var(--border-glow);
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15),
-              inset 0 0 15px rgba(139, 92, 246, 0.03);
+  box-shadow: 0 0 15px rgba(163, 163, 163, 0.15),
+              inset 0 0 15px rgba(163, 163, 163, 0.03);
+}
+
+/* ─── Typing Animation ───────────────────────────────────────────── */
+@keyframes typingDot {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.typing-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a3a3a3;
+  animation: typingDot 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 2px 12px 12px 12px;
+  background: rgba(163,163,163,0.05);
+  border: 1px solid rgba(163,163,163,0.1);
+  width: fit-content;
 }
 
 /* ─── Nebula Background (full app) ─────────────────────────────── */
@@ -221,7 +250,7 @@ body {
   font-size: 13px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  background: linear-gradient(135deg, #e8e4ff, #a78bfa);
+  background: linear-gradient(135deg, #ffffff, #d4d4d4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -265,12 +294,12 @@ body {
 
 .file-item:hover {
   color: var(--text-primary);
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(163, 163, 163, 0.08);
 }
 
 .file-item.active {
   color: var(--accent-violet);
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(163, 163, 163, 0.12);
 }
 
 .file-item.active::before {
@@ -298,15 +327,15 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(139, 92, 246, 0.04);
+  background: rgba(163, 163, 163, 0.04);
 }
 
 .oracle-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4c1d95, #7c3aed);
-  border: 1px solid rgba(139, 92, 246, 0.5);
+  background: linear-gradient(135deg, #404040, #737373);
+  border: 1px solid rgba(163, 163, 163, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -335,16 +364,16 @@ body {
 }
 
 .oracle-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.1), inset 0 0 8px rgba(139, 92, 246, 0.04);
+  border-color: rgba(163, 163, 163, 0.5);
+  box-shadow: 0 0 15px rgba(163, 163, 163, 0.1), inset 0 0 8px rgba(163, 163, 163, 0.04);
 }
 
 .oracle-input::placeholder { color: var(--text-muted); }
 
 /* ─── Message Bubbles ───────────────────────────────────────────── */
 .msg-user {
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(163, 163, 163, 0.12);
+  border: 1px solid rgba(163, 163, 163, 0.2);
   border-radius: 12px 12px 2px 12px;
   padding: 10px 14px;
   font-size: 13px;
@@ -391,14 +420,14 @@ body {
   position: absolute;
   left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(139,92,246,0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(163,163,163,0.1), transparent);
   animation: scan-line 4s linear infinite;
   pointer-events: none;
 }
 
 /* ─── Buttons ───────────────────────────────────────────────────── */
 .btn-primary {
-  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  background: linear-gradient(135deg, #737373, #525252);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -429,7 +458,7 @@ body {
 .btn-primary:active { transform: translateY(0); }
 
 .btn-ghost {
-  background: rgba(139, 92, 246, 0.08);
+  background: rgba(163, 163, 163, 0.08);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
@@ -440,7 +469,7 @@ body {
 }
 
 .btn-ghost:hover {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(163, 163, 163, 0.15);
   color: var(--text-primary);
   border-color: var(--border-dim);
 }
@@ -473,16 +502,16 @@ body {
 
 .activity-item.running {
   border-left-color: var(--accent-violet);
-  background: rgba(139, 92, 246, 0.04);
+  background: rgba(163, 163, 163, 0.04);
 }
 
 .activity-item.success {
-  border-left-color: #10b981;
+  border-left-color: #a3a3a3;
   background: rgba(16, 185, 129, 0.04);
 }
 
 .activity-item.error {
-  border-left-color: #ef4444;
+  border-left-color: #737373;
   background: rgba(239, 68, 68, 0.04);
 }
 
@@ -494,7 +523,7 @@ body {
   padding: 10px 14px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: #a78bfa;
+  color: #d4d4d4;
   overflow-x: auto;
   margin: 6px 0;
 }
@@ -513,11 +542,11 @@ body {
 /* ─── Diff view ─────────────────────────────────────────────────── */
 .diff-added {
   background: rgba(16, 185, 129, 0.08);
-  border-left: 2px solid #10b981;
+  border-left: 2px solid #a3a3a3;
 }
 .diff-removed {
   background: rgba(239, 68, 68, 0.08);
-  border-left: 2px solid #ef4444;
+  border-left: 2px solid #737373;
 }
 
 /* ─── Tab bar ───────────────────────────────────────────────────── */
@@ -541,7 +570,7 @@ body {
   position: relative;
 }
 
-.tab:hover { color: var(--text-secondary); background: rgba(139,92,246,0.04); }
+.tab:hover { color: var(--text-secondary); background: rgba(163,163,163,0.04); }
 
 .tab.active {
   color: var(--text-primary);
@@ -558,6 +587,6 @@ body {
 
 /* ─── Focus ring ─────────────────────────────────────────────────── */
 button:focus-visible, input:focus-visible, textarea:focus-visible {
-  outline: 2px solid rgba(139, 92, 246, 0.6);
+  outline: 2px solid rgba(163, 163, 163, 0.6);
   outline-offset: 2px;
 }

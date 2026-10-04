@@ -4,16 +4,7 @@ import { AsteriaAPI, FileNode } from '../core/AsteriaAPI';
 
 // ─── File type → icon color ────────────────────────────────────────
 function getFileColor(name: string): string {
-  const ext = name.split('.').pop()?.toLowerCase() || '';
-  const map: Record<string, string> = {
-    ts: '#3178c6', tsx: '#61dafb', js: '#f7df1e', jsx: '#61dafb',
-    py: '#3572a5', rs: '#ce412b', go: '#00acd7', java: '#b07219',
-    css: '#563d7c', scss: '#c76395', html: '#e44b23', json: '#cbcb41',
-    md: '#083fa1', yml: '#cb171e', yaml: '#cb171e', sh: '#4eaa25',
-    svg: '#f9a825', png: '#6f42c1', jpg: '#6f42c1', gif: '#6f42c1',
-    toml: '#9c4221', lock: '#888', env: '#ecc94b',
-  };
-  return map[ext] || '#6b7280';
+  return '#8f8f8f';
 }
 
 // ─── File Icon ─────────────────────────────────────────────────────
@@ -85,7 +76,7 @@ function ContextMenu({ menu, onClose, onAction }: { menu: CtxMenu; onClose: () =
             <div key={item.id} onClick={() => { onAction(item.id, menu.node); onClose(); }}
               style={{
                 padding: '6px 14px', fontSize: 12.5, cursor: 'pointer',
-                color: (item as any).danger ? '#f87171' : item.id.startsWith('ask') || item.id.startsWith('explain') || item.id.startsWith('review') ? '#a78bfa' : '#d1d5db',
+                color: (item as any).danger ? '#737373' : item.id.startsWith('ask') || item.id.startsWith('explain') || item.id.startsWith('review') ? '#d4d4d4' : '#d1d5db',
                 transition: 'background 0.1s',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
@@ -116,7 +107,7 @@ function InlineInput({ defaultValue, onConfirm, onCancel }: {
       onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onConfirm(val); } if (e.key === 'Escape') onCancel(); }}
       onBlur={() => onConfirm(val)}
       style={{
-        flex: 1, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.5)',
+        flex: 1, background: 'rgba(163,163,163,0.1)', border: '1px solid rgba(163,163,163,0.5)',
         borderRadius: 3, color: '#e5e7eb', fontSize: 12.5, padding: '1px 6px',
         outline: 'none', fontFamily: 'inherit',
       }}
@@ -169,8 +160,8 @@ function TreeNode({ node, depth, onFileOpen, onRefresh, onContextMenu, activeFil
           paddingLeft: `${8 + depth * 12}px`, paddingRight: 8,
           paddingTop: 3, paddingBottom: 3, cursor: 'pointer',
           borderRadius: 4, margin: '0 4px',
-          background: isActive ? 'rgba(139,92,246,0.12)' : 'transparent',
-          borderLeft: isActive ? '2px solid rgba(139,92,246,0.6)' : '2px solid transparent',
+          background: isActive ? 'rgba(163,163,163,0.12)' : 'transparent',
+          borderLeft: isActive ? '2px solid rgba(163,163,163,0.6)' : '2px solid transparent',
           transition: 'all 0.1s',
         }}
         onClick={() => {
@@ -194,7 +185,7 @@ function TreeNode({ node, depth, onFileOpen, onRefresh, onContextMenu, activeFil
         {renaming ? (
           <InlineInput defaultValue={node.name} onConfirm={handleRename} onCancel={() => setRenaming(false)} />
         ) : (
-          <span style={{ fontSize: 12.5, color: isActive ? '#c4b5fd' : '#c9d1d9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, userSelect: 'none' }}>
+          <span style={{ fontSize: 12.5, color: isActive ? '#e5e5e5' : '#c9d1d9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, userSelect: 'none' }}>
             {node.name}
           </span>
         )}
@@ -341,7 +332,7 @@ export default function FileExplorer() {
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button onClick={() => setDeleteTarget(null)} style={{ padding: '6px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
-              <button onClick={confirmDelete} style={{ padding: '6px 16px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', borderRadius: 6, cursor: 'pointer' }}>Delete</button>
+              <button onClick={confirmDelete} style={{ padding: '6px 16px', background: 'rgba(115,115,115,0.15)', border: '1px solid rgba(115,115,115,0.3)', color: '#737373', borderRadius: 6, cursor: 'pointer' }}>Delete</button>
             </div>
           </div>
         </div>

@@ -19,8 +19,7 @@ export default function CommandPalette({ onClose }: Props) {
   const commands: CommandItem[] = [
     { id: 'home', label: 'Go to ASTERIA Home', category: 'Navigate', icon: '⌂', shortcut: '⌘⇧H', action: () => { setMode('home'); onClose(); } },
     { id: 'codeMode', label: 'Enter Code Mode', category: 'Navigate', icon: '◇', action: () => { setMode('code'); onClose(); } },
-    { id: 'research', label: 'Enter Research Mode', category: 'Navigate', icon: '◌', action: () => { setMode('research'); onClose(); } },
-    { id: 'writing', label: 'Enter Writing Mode', category: 'Navigate', icon: '✧', action: () => { setMode('writing'); onClose(); } },
+    { id: 'imageMode', label: 'Enter Image Creation Mode', category: 'Navigate', icon: '✦', action: () => { setMode('image'); onClose(); } },
     { id: 'toggleTerminal', label: 'Toggle Terminal', category: 'View', icon: '›_', shortcut: '⌘`', action: () => { setTerminalOpen(!useAppStore.getState().terminalOpen); onClose(); } },
     { id: 'toggleSidebar', label: 'Toggle Sidebar', category: 'View', icon: '▪', shortcut: '⌘B', action: () => { setSidebarOpen(!useAppStore.getState().sidebarOpen); onClose(); } },
     { id: 'toggleOracle', label: 'Toggle Oracle Panel', category: 'View', icon: '✦', shortcut: '⌘J', action: () => { setOraclePanelOpen(!useAppStore.getState().oraclePanelOpen); onClose(); } },
@@ -41,7 +40,7 @@ export default function CommandPalette({ onClose }: Props) {
       style={{ position: 'fixed', inset: 0, zIndex: 9500, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '15vh' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: 560, background: '#0d1117', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.8)' }}>
+      <div style={{ width: 560, background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.8)' }}>
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4b5563" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
@@ -64,7 +63,7 @@ export default function CommandPalette({ onClose }: Props) {
               {cmds.map(cmd => (
                 <div key={cmd.id} onClick={cmd.action}
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', cursor: 'pointer', transition: 'background 0.1s' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.08)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(163,163,163,0.08)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

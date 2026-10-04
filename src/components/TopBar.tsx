@@ -16,12 +16,12 @@ export default function CodeTopBar({ onOpenSettings, onCommandPalette, onToggleS
 
   const statusConf: Record<string, { icon: string; color: string }> = {
     idle:      { icon: '●', color: '#4b5563' },
-    observing: { icon: '◌', color: '#8b5cf6' },
-    thinking:  { icon: '✦', color: '#a78bfa' },
-    planning:  { icon: '◇', color: '#6366f1' },
-    executing: { icon: '◆', color: '#c4b5fd' },
-    completed: { icon: '✓', color: '#34d399' },
-    failed:    { icon: '✕', color: '#f87171' },
+    observing: { icon: '◌', color: '#a3a3a3' },
+    thinking:  { icon: '✦', color: '#d4d4d4' },
+    planning:  { icon: '◇', color: '#737373' },
+    executing: { icon: '◆', color: '#e5e5e5' },
+    completed: { icon: '✓', color: '#a3a3a3' },
+    failed:    { icon: '✕', color: '#737373' },
   };
   const sc = statusConf[oracleStatus] ?? statusConf.idle;
 
@@ -37,26 +37,22 @@ export default function CodeTopBar({ onOpenSettings, onCommandPalette, onToggleS
   return (
     <div style={{
       height: 40, display: 'flex', alignItems: 'center', padding: '0 12px',
-      background: '#080c14', borderBottom: '1px solid rgba(255,255,255,0.06)',
+      background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.06)',
       flexShrink: 0, gap: 0, position: 'relative', zIndex: 50,
     }}>
       {/* Left: Logo + Brand → Home */}
       <button
         onClick={() => setMode('home')}
         style={{
-          display: 'flex', alignItems: 'center', gap: 7, marginRight: 16,
+          display: 'flex', alignItems: 'center', gap: 8, marginRight: 16,
           background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px',
           borderRadius: 6, transition: 'background 0.2s',
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        <svg width="16" height="16" viewBox="0 0 80 80" fill="none">
-          <circle cx="40" cy="40" r="36" stroke="rgba(139,92,246,0.35)" strokeWidth="1.5" strokeDasharray="2 4" />
-          <circle cx="40" cy="40" r="5" fill="rgba(139,92,246,0.7)" />
-          <circle cx="40" cy="40" r="2" fill="white" fillOpacity="0.9" />
-        </svg>
-        <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: '0.2em', background: 'linear-gradient(135deg, #c4b5fd, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <img src="/logo.png" alt="Asteria" style={{ width: 18, height: 18, objectFit: 'contain', filter: 'grayscale(100%) brightness(1.6)' }} />
+        <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: '0.2em', background: 'linear-gradient(135deg, #e5e5e5, #d4d4d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
           ASTERIA
         </span>
       </button>
@@ -92,7 +88,7 @@ export default function CodeTopBar({ onOpenSettings, onCommandPalette, onToggleS
         <span style={{ fontSize: 12, color: sc.color }}>
           {sc.icon}
         </span>
-        <span style={{ fontSize: 11.5, color: '#374151' }}>
+        <span style={{ fontSize: 11.5, color: '#2a2a2a' }}>
           Oracle {oracleStatus.charAt(0).toUpperCase() + oracleStatus.slice(1)}
         </span>
       </div>
@@ -109,7 +105,7 @@ export default function CodeTopBar({ onOpenSettings, onCommandPalette, onToggleS
               borderRadius: 6, cursor: 'pointer', color: '#9ca3af', fontSize: 11.5,
             }}
           >
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10b981', display: 'inline-block', flexShrink: 0 }} />
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#a3a3a3', display: 'inline-block', flexShrink: 0 }} />
             {currentModel}
             <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>
@@ -118,7 +114,7 @@ export default function CodeTopBar({ onOpenSettings, onCommandPalette, onToggleS
               <div style={{ position: 'fixed', inset: 0, zIndex: 98 }} onClick={() => setModelOpen(false)} />
               <div style={{
                 position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 99,
-                background: '#0f1117', border: '1px solid rgba(255,255,255,0.1)',
+                background: '#111111', border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: 8, padding: 4, minWidth: 200,
                 boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
               }}>
@@ -128,12 +124,12 @@ export default function CodeTopBar({ onOpenSettings, onCommandPalette, onToggleS
                     <div key={m.name} onClick={() => { setCurrentModel(m.name); setModelOpen(false); }}
                       style={{
                         padding: '7px 12px', borderRadius: 5, cursor: 'pointer', fontSize: 12.5,
-                        color: m.name === currentModel ? '#c4b5fd' : '#9ca3af',
-                        background: m.name === currentModel ? 'rgba(139,92,246,0.1)' : 'transparent',
+                        color: m.name === currentModel ? '#e5e5e5' : '#9ca3af',
+                        background: m.name === currentModel ? 'rgba(163,163,163,0.1)' : 'transparent',
                         display: 'flex', justifyContent: 'space-between',
                       }}>
                       <span>{m.name}</span>
-                      {m.name === currentModel && <span style={{ color: '#8b5cf6' }}>✓</span>}
+                      {m.name === currentModel && <span style={{ color: '#a3a3a3' }}>✓</span>}
                     </div>
                   ))
                 }

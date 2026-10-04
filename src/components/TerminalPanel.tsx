@@ -10,9 +10,9 @@ export default function TerminalPanel() {
       {/* Header */}
       <div className="terminal-header">
         <span style={{ display: 'flex', gap: 6, marginRight: 10 }}>
-          <IconDot color="#ef4444" />
+          <IconDot color="#737373" />
           <IconDot color="#f59e0b" />
-          <IconDot color="#10b981" />
+          <IconDot color="#a3a3a3" />
         </span>
         <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
           Terminal
@@ -40,14 +40,14 @@ export default function TerminalPanel() {
           <span style={{ color: 'var(--text-primary)' }}>npm run dev</span>
         </div>
 
-        <div style={{ color: '#8b5cf6', marginBottom: 4 }}>
+        <div style={{ color: '#a3a3a3', marginBottom: 4 }}>
           &nbsp;&gt; asteria@1.0.0 dev
         </div>
-        <div style={{ color: '#8b5cf6', marginBottom: 8 }}>
+        <div style={{ color: '#a3a3a3', marginBottom: 8 }}>
           &nbsp;&gt; vite-plugin-electron/simple
         </div>
 
-        <div style={{ color: '#a78bfa', marginBottom: 2 }}>
+        <div style={{ color: '#d4d4d4', marginBottom: 2 }}>
           VITE v5.4.21 &nbsp;ready in 304 ms
         </div>
         <div style={{ color: 'var(--text-muted)', marginBottom: 1 }}>
