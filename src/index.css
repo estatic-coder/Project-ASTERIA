@@ -1,0 +1,563 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design Tokens ────────────────────────────────────────────── */
+:root {
+  --bg-void:        #04060e;
+  --bg-deep:        #070b18;
+  --bg-surface:     #0c1122;
+  --bg-elevated:    #111827;
+  --bg-panel:       #0d1420;
+  --bg-card:        #131c2e;
+
+  --border-subtle:  rgba(139, 92, 246, 0.12);
+  --border-dim:     rgba(139, 92, 246, 0.20);
+  --border-glow:    rgba(139, 92, 246, 0.45);
+
+  --accent-violet:  #8b5cf6;
+  --accent-indigo:  #6366f1;
+  --accent-blue:    #3b82f6;
+  --accent-cyan:    #06b6d4;
+  --accent-glow:    rgba(139, 92, 246, 0.35);
+
+  --text-primary:   #e8e4ff;
+  --text-secondary: #a89fc8;
+  --text-muted:     #5c5478;
+  --text-ghost:     #3a3356;
+
+  --shadow-sm:      0 1px 8px rgba(0,0,0,0.6);
+  --shadow-md:      0 4px 24px rgba(0,0,0,0.7);
+  --shadow-lg:      0 8px 48px rgba(0,0,0,0.8);
+  --shadow-glow:    0 0 30px rgba(139,92,246,0.25);
+}
+
+/* ─── Base Reset ───────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbars ────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* ─── Selection ─────────────────────────────────────────────────── */
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}
+
+/* ─── Glass Morphism Utility ────────────────────────────────────── */
+.glass {
+  background: rgba(13, 20, 38, 0.75);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-bright {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid var(--border-dim);
+}
+
+/* ─── Glow Effects ──────────────────────────────────────────────── */
+.glow-violet {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.25),
+              0 0 60px rgba(139, 92, 246, 0.08);
+}
+
+.glow-violet-text {
+  text-shadow: 0 0 20px rgba(139, 92, 246, 0.7);
+}
+
+.glow-border {
+  border-color: var(--border-glow);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15),
+              inset 0 0 15px rgba(139, 92, 246, 0.03);
+}
+
+/* ─── Nebula Background (full app) ─────────────────────────────── */
+.nebula-bg {
+  position: relative;
+}
+.nebula-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(60, 30, 120, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 70%, rgba(20, 50, 140, 0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 0%, rgba(80, 40, 160, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Star Layer ────────────────────────────────────────────────── */
+.star-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle var(--dur, 3s) ease-in-out infinite;
+  animation-delay: var(--del, 0s);
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: var(--min-op, 0.2); transform: scale(1); }
+  50% { opacity: var(--max-op, 0.8); transform: scale(1.3); }
+}
+
+/* ─── Animations ────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.9); opacity: 0.8; }
+  50%  { transform: scale(1.05); opacity: 0.5; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-bottom {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scan-line {
+  from { top: 0; }
+  to   { top: 100%; }
+}
+
+.float-anim { animation: float 6s ease-in-out infinite; }
+.fade-in    { animation: fade-in 0.5s ease forwards; }
+.slide-in-r { animation: slide-in-right 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.slide-in-b { animation: slide-in-bottom 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+/* ─── Top Bar ───────────────────────────────────────────────────── */
+.topbar {
+  height: 42px;
+  background: rgba(7, 11, 24, 0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  justify-content: space-between;
+  position: relative;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+/* thin violet line at very top */
+.topbar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-violet), transparent);
+  opacity: 0.6;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.topbar-logo-mark {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+
+.topbar-wordmark {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #e8e4ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────── */
+.sidebar {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.sidebar-section-header {
+  padding: 8px 16px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  margin: 1px 4px;
+  position: relative;
+}
+
+.file-item:hover {
+  color: var(--text-primary);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.file-item.active {
+  color: var(--accent-violet);
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.file-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 2px; bottom: 2px;
+  width: 2px;
+  background: var(--accent-violet);
+  border-radius: 2px;
+}
+
+/* ─── Oracle Panel ──────────────────────────────────────────────── */
+.oracle-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.oracle-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(139, 92, 246, 0.04);
+}
+
+.oracle-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4c1d95, #7c3aed);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.oracle-input-row {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(7, 11, 24, 0.6);
+}
+
+.oracle-input {
+  width: 100%;
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 36px 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  resize: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  line-height: 1.5;
+}
+
+.oracle-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.1), inset 0 0 8px rgba(139, 92, 246, 0.04);
+}
+
+.oracle-input::placeholder { color: var(--text-muted); }
+
+/* ─── Message Bubbles ───────────────────────────────────────────── */
+.msg-user {
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px 12px 2px 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  align-self: flex-end;
+  max-width: 85%;
+}
+
+.msg-oracle {
+  background: rgba(13, 20, 38, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px 12px 12px 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 92%;
+}
+
+/* ─── Terminal ──────────────────────────────────────────────────── */
+.terminal-panel {
+  background: rgba(4, 6, 14, 0.95);
+  border-top: 1px solid var(--border-subtle);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #a8c0a0;
+  position: relative;
+}
+
+.terminal-header {
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(7, 11, 24, 0.8);
+}
+
+/* scan line effect */
+.terminal-panel::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(139,92,246,0.1), transparent);
+  animation: scan-line 4s linear infinite;
+  pointer-events: none;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.5);
+}
+
+.btn-primary:hover::after { opacity: 1; }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  background: rgba(139, 92, 246, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--text-primary);
+  border-color: var(--border-dim);
+}
+
+/* ─── Status Indicator ──────────────────────────────────────────── */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-violet);
+  box-shadow: 0 0 8px var(--accent-violet);
+  animation: pulse-ring 2.5s ease-in-out infinite;
+}
+
+.status-dot.inactive {
+  background: var(--text-ghost);
+  box-shadow: none;
+  animation: none;
+}
+
+/* ─── Activity Item ─────────────────────────────────────────────── */
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 14px;
+  border-left: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.activity-item.running {
+  border-left-color: var(--accent-violet);
+  background: rgba(139, 92, 246, 0.04);
+}
+
+.activity-item.success {
+  border-left-color: #10b981;
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.activity-item.error {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.04);
+}
+
+/* ─── Code block inside oracle ──────────────────────────────────── */
+.oracle-code {
+  background: rgba(4, 6, 14, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #a78bfa;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+
+/* ─── Permission card ───────────────────────────────────────────── */
+.permission-card {
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── Diff view ─────────────────────────────────────────────────── */
+.diff-added {
+  background: rgba(16, 185, 129, 0.08);
+  border-left: 2px solid #10b981;
+}
+.diff-removed {
+  background: rgba(239, 68, 68, 0.08);
+  border-left: 2px solid #ef4444;
+}
+
+/* ─── Tab bar ───────────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.tab {
+  padding: 6px 18px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.tab:hover { color: var(--text-secondary); background: rgba(139,92,246,0.04); }
+
+.tab.active {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-indigo));
+}
+
+/* ─── Focus ring ─────────────────────────────────────────────────── */
+button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.6);
+  outline-offset: 2px;
+}
