@@ -55,6 +55,25 @@ const MODES = [
 
 type ModeId = (typeof MODES)[number]['id'];
 
+function AliveThinking() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 8px' }}>
+      <div style={{ position: 'relative', width: 24, height: 24 }}>
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.05)', borderTopColor: '#e5e5e5', animation: 'spin-fast 0.8s linear infinite' }} />
+        <div style={{ position: 'absolute', inset: 4, borderRadius: '50%', border: '1.5px solid rgba(255,255,255,0.05)', borderRightColor: '#a3a3a3', animation: 'spin-slow 1.2s linear infinite reverse' }} />
+        <div style={{ position: 'absolute', inset: 10, borderRadius: '50%', background: '#fff', boxShadow: '0 0 12px rgba(255,255,255,0.8)', animation: 'pulse-glow 1.5s ease-in-out infinite alternate' }} />
+      </div>
+      <span style={{ fontSize: 11, color: '#a3a3a3', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 500, animation: 'pulse-glow-text 1.5s ease-in-out infinite alternate' }}>Thinking</span>
+      <style>{`
+        @keyframes spin-fast { to { transform: rotate(360deg); } }
+        @keyframes spin-slow { to { transform: rotate(360deg); } }
+        @keyframes pulse-glow { from { opacity: 0.4; transform: scale(0.85); } to { opacity: 1; transform: scale(1.15); } }
+        @keyframes pulse-glow-text { from { opacity: 0.5; } to { opacity: 1; } }
+      `}</style>
+    </div>
+  );
+}
+
 export default function AsteriaHome() {
   const { conversations, addMessage, currentModel, availableModels, setCurrentModel, setMode, setWorkspace, addRecentProject, recentProjects, sidebarOpen, setSidebarOpen } = useAppStore();
   const [selectedMode, setSelectedMode] = useState<ModeId>('general');
@@ -93,7 +112,7 @@ export default function AsteriaHome() {
     });
 
     try {
-      const res = await fetch('http://localhost:11434/api/chat', {
+      const res = await fetch('http://127.0.0.1:11434/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -294,7 +313,7 @@ export default function AsteriaHome() {
                     <div style={{ display: 'flex', gap: 13, width: '100%', alignItems: 'flex-start' }}>
                       <div style={{ flexShrink: 0, width: 27, height: 27, borderRadius: '50%', background: 'linear-gradient(135deg, #1e1e1e, #3a3a3a)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#a3a3a3' }}>✦</div>
                       <div style={{ flex: 1, paddingTop: 3, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#c4c4c4', lineHeight: 1.75 }}>
-                        {m.streaming && !m.content ? <span style={{ color: '#404040', letterSpacing: '0.2em' }}>● ● ●</span> : m.content}
+                        {m.streaming && !m.content ? <AliveThinking /> : m.content}
                       </div>
                     </div>
                   )}
@@ -363,8 +382,8 @@ export default function AsteriaHome() {
         <div style={{ display: 'flex', gap: 6, marginBottom: 28, flexWrap: 'wrap', justifyContent: 'center' }}>
           {MODES.map(m => (
             <button key={m.id} onClick={() => {
-              if (m.id === 'image' || m.id === 'analysis') {
-                setMode(m.id as AppMode);
+              if (m.id === 'image') {
+                setMode(m.id as any);
               } else {
                 setSelectedMode(m.id);
               }

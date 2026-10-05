@@ -96,7 +96,7 @@ ipcMain.handle('fs:exists', async (_, filePath: string) => existsSync(filePath))
 ipcMain.handle('ollama:listModels', async () => {
   const http = await import('http');
   return new Promise((resolve) => {
-    const req = http.default.get('http://localhost:11434/api/tags', (res) => {
+    const req = http.default.get('http://127.0.0.1:11434/api/tags', (res) => {
       let data = '';
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {

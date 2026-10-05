@@ -27,7 +27,7 @@ export class OracleAgent {
    * Here we mock a multi-step plan to demonstrate the timeline and permission system.
    */
   async executePlan(
-    prompt: string, 
+    _prompt: string, 
     onActivityUpdate: (activity: AgentActivity) => void,
     requestPermission: (tool: string, args: any) => Promise<boolean>
   ) {

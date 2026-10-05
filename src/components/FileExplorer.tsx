@@ -2,27 +2,40 @@ import React, { useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { AsteriaAPI, FileNode } from '../core/AsteriaAPI';
 
-// ─── File type → icon color ────────────────────────────────────────
-function getFileColor(name: string): string {
-  return '#8f8f8f';
+// ─── File extension → color ────────────────────────────────────────
+function getExtColor(ext: string): string {
+  const map: Record<string, string> = {
+    ts: '#3178c6', tsx: '#3178c6', js: '#f7df1e', jsx: '#f7df1e',
+    py: '#3572a5', rs: '#ce4a2e', go: '#00add8', json: '#cbcb41',
+    md: '#6db1e8', css: '#563d7c', scss: '#c6538c', html: '#e34c26',
+    yml: '#cb171e', yaml: '#cb171e', sh: '#89e051', toml: '#9c4221',
+    lock: '#525252', svg: '#ff9800',
+  };
+  return map[ext] || '#525252';
 }
 
-// ─── File Icon ─────────────────────────────────────────────────────
-function FileIcon({ name }: { name: string }) {
+// ─── File Icon ──────────────────────────────────────────────────────
+function FileIcon({ name, isFolder, expanded }: { name: string; isFolder: boolean; expanded?: boolean }) {
+  if (isFolder) {
+    return (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+        <path
+          d={expanded
+            ? "M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2z"
+            : "M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"}
+          stroke={expanded ? '#737373' : '#525252'}
+          strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+          fill={expanded ? 'rgba(115,115,115,0.15)' : 'none'}
+        />
+      </svg>
+    );
+  }
   const ext = name.split('.').pop()?.toLowerCase() || '';
-  const color = getFileColor(name);
-
-  // Folder
+  const color = getExtColor(ext);
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-      {ext ? (
-        <>
-          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-          <polyline points="13 2 13 9 20 9" />
-        </>
-      ) : (
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-      )}
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+      <polyline points="13 2 13 9 20 9" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
     </svg>
   );
 }
@@ -31,55 +44,58 @@ function FileIcon({ name }: { name: string }) {
 interface CtxMenu { x: number; y: number; node: FileNode }
 
 function ContextMenu({ menu, onClose, onAction }: { menu: CtxMenu; onClose: () => void; onAction: (a: string, n: FileNode) => void }) {
-  const items = menu.node.type === 'folder'
-    ? [
-      { id: 'newFile', label: 'New File' },
-      { id: 'newFolder', label: 'New Folder' },
-      null,
-      { id: 'reveal', label: 'Reveal in File Manager' },
-      { id: 'copyPath', label: 'Copy Path' },
-      null,
-      { id: 'rename', label: 'Rename' },
-      { id: 'delete', label: 'Delete', danger: true },
-      null,
-      { id: 'askOracle', label: '✦ Ask Oracle About Folder' },
-    ]
-    : [
-      { id: 'open', label: 'Open' },
-      { id: 'openSide', label: 'Open to the Side' },
-      null,
-      { id: 'reveal', label: 'Reveal in File Manager' },
-      { id: 'copyPath', label: 'Copy Path' },
-      null,
-      { id: 'rename', label: 'Rename' },
-      { id: 'delete', label: 'Delete', danger: true },
-      null,
-      { id: 'askOracle', label: '✦ Ask Oracle' },
-      { id: 'explainFile', label: '✦ Explain File' },
-      { id: 'reviewFile', label: '✦ Review File' },
-    ];
+  const folderItems = [
+    { id: 'newFile', label: 'New File', icon: '＋' },
+    { id: 'newFolder', label: 'New Folder', icon: '＋' },
+    null,
+    { id: 'reveal', label: 'Reveal in Explorer', icon: '⎋' },
+    { id: 'copyPath', label: 'Copy Path', icon: '⎘' },
+    null,
+    { id: 'rename', label: 'Rename', icon: '✎' },
+    { id: 'delete', label: 'Delete', icon: '⌫', danger: true },
+    null,
+    { id: 'askOracle', label: '✦ Ask Oracle', icon: '' },
+  ];
+  const fileItems = [
+    { id: 'open', label: 'Open', icon: '↗' },
+    { id: 'openSide', label: 'Open to the Side', icon: '▥' },
+    null,
+    { id: 'reveal', label: 'Reveal in Explorer', icon: '⎋' },
+    { id: 'copyPath', label: 'Copy Path', icon: '⎘' },
+    null,
+    { id: 'rename', label: 'Rename', icon: '✎' },
+    { id: 'delete', label: 'Delete', icon: '⌫', danger: true },
+    null,
+    { id: 'askOracle', label: '✦ Ask Oracle', icon: '' },
+    { id: 'explainFile', label: '✦ Explain File', icon: '' },
+  ];
+  const items = menu.node.type === 'folder' ? folderItems : fileItems;
 
   return (
     <>
       <div style={{ position: 'fixed', inset: 0, zIndex: 999 }} onClick={onClose} />
       <div style={{
         position: 'fixed', left: menu.x, top: menu.y, zIndex: 1000,
-        background: '#111319', border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 6, padding: '4px 0', minWidth: 200,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
-        animation: 'slide-in-bottom 0.1s ease-out',
+        background: 'rgba(12,12,12,0.97)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 8, padding: '4px 0', minWidth: 200,
+        boxShadow: '0 12px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,0,0,0.4)',
       }}>
         {items.map((item, i) =>
           item === null ? (
-            <div key={i} style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '3px 0' }} />
+            <div key={i} style={{ height: 1, background: 'rgba(255,255,255,0.05)', margin: '3px 0' }} />
           ) : (
             <div key={item.id} onClick={() => { onAction(item.id, menu.node); onClose(); }}
               style={{
-                padding: '6px 14px', fontSize: 12.5, cursor: 'pointer',
-                color: (item as any).danger ? '#737373' : item.id.startsWith('ask') || item.id.startsWith('explain') || item.id.startsWith('review') ? '#d4d4d4' : '#d1d5db',
-                transition: 'background 0.1s',
+                padding: '6px 14px', fontSize: 12, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8,
+                color: (item as any).danger ? '#525252'
+                  : item.id.startsWith('ask') || item.id.startsWith('explain') ? '#a3a3a3'
+                  : '#8f8f8f',
+                transition: 'all 0.1s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               {item.label}
@@ -91,24 +107,22 @@ function ContextMenu({ menu, onClose, onAction }: { menu: CtxMenu; onClose: () =
   );
 }
 
-// ─── Inline rename / create input ────────────────────────────────
+// ─── Inline Input ─────────────────────────────────────────────────
 function InlineInput({ defaultValue, onConfirm, onCancel }: {
   defaultValue: string; onConfirm: (v: string) => void; onCancel: () => void;
 }) {
   const [val, setVal] = useState(defaultValue);
   const inputRef = useRef<HTMLInputElement>(null);
   React.useEffect(() => { inputRef.current?.select(); }, []);
-
   return (
     <input
-      ref={inputRef}
-      value={val}
+      ref={inputRef} value={val}
       onChange={e => setVal(e.target.value)}
       onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onConfirm(val); } if (e.key === 'Escape') onCancel(); }}
       onBlur={() => onConfirm(val)}
       style={{
-        flex: 1, background: 'rgba(163,163,163,0.1)', border: '1px solid rgba(163,163,163,0.5)',
-        borderRadius: 3, color: '#e5e7eb', fontSize: 12.5, padding: '1px 6px',
+        flex: 1, background: 'rgba(163,163,163,0.08)', border: '1px solid rgba(163,163,163,0.3)',
+        borderRadius: 3, color: '#d4d4d4', fontSize: 12, padding: '1px 5px',
         outline: 'none', fontFamily: 'inherit',
       }}
       autoFocus
@@ -116,12 +130,10 @@ function InlineInput({ defaultValue, onConfirm, onCancel }: {
   );
 }
 
-// ─── Single tree node ─────────────────────────────────────────────
+// ─── Tree Node ─────────────────────────────────────────────────────
 interface TreeNodeProps {
-  node: FileNode;
-  depth: number;
-  onFileOpen: (node: FileNode) => void;
-  onRefresh: () => void;
+  node: FileNode; depth: number;
+  onFileOpen: (node: FileNode) => void; onRefresh: () => void;
   onContextMenu: (e: React.MouseEvent, node: FileNode) => void;
   activeFilePath: string | null;
 }
@@ -131,6 +143,7 @@ function TreeNode({ node, depth, onFileOpen, onRefresh, onContextMenu, activeFil
   const [renaming, setRenaming] = useState(false);
   const [creating, setCreating] = useState<'file' | 'folder' | null>(null);
   const isActive = activeFilePath === node.path;
+  const isFolder = node.type === 'folder';
 
   const handleRename = async (newName: string) => {
     setRenaming(false);
@@ -150,68 +163,65 @@ function TreeNode({ node, depth, onFileOpen, onRefresh, onContextMenu, activeFil
     onRefresh();
   };
 
-  const isFolder = node.type === 'folder';
-
   return (
     <div>
       <div
         style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          paddingLeft: `${8 + depth * 12}px`, paddingRight: 8,
-          paddingTop: 3, paddingBottom: 3, cursor: 'pointer',
-          borderRadius: 4, margin: '0 4px',
-          background: isActive ? 'rgba(163,163,163,0.12)' : 'transparent',
-          borderLeft: isActive ? '2px solid rgba(163,163,163,0.6)' : '2px solid transparent',
-          transition: 'all 0.1s',
+          display: 'flex', alignItems: 'center', gap: 4,
+          paddingLeft: `${6 + depth * 14}px`, paddingRight: 6,
+          paddingTop: 2.5, paddingBottom: 2.5, cursor: 'pointer',
+          borderRadius: 5, margin: '0 4px',
+          background: isActive ? 'rgba(255,255,255,0.07)' : 'transparent',
+          position: 'relative',
+          transition: 'background 0.1s',
         }}
-        onClick={() => {
-          if (isFolder) setExpanded(p => !p);
-          else onFileOpen(node);
-        }}
+        onClick={() => { if (isFolder) setExpanded(p => !p); else onFileOpen(node); }}
         onContextMenu={e => { e.preventDefault(); onContextMenu(e, node); }}
         onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
       >
-        {/* Chevron for folders */}
-        {isFolder && (
-          <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
-            <path d="M2.5 1.5l3 3-3 3" stroke="#4b5563" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+        {/* Active indicator */}
+        {isActive && (
+          <div style={{ position: 'absolute', left: 0, top: '15%', height: '70%', width: 2, borderRadius: 1, background: '#525252' }} />
         )}
-        {!isFolder && <span style={{ width: 9, flexShrink: 0 }} />}
 
-        <FileIcon name={isFolder ? '' : node.name} />
+        {/* Chevron */}
+        {isFolder ? (
+          <svg width="8" height="8" viewBox="0 0 9 9" fill="none" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: expanded ? 'rotate(90deg)' : 'rotate(0)' }}>
+            <path d="M2.5 1.5l3 3-3 3" stroke="#3f3f3f" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        ) : (
+          <span style={{ width: 8, flexShrink: 0 }} />
+        )}
+
+        <FileIcon name={node.name} isFolder={isFolder} expanded={isFolder ? expanded : undefined} />
 
         {renaming ? (
           <InlineInput defaultValue={node.name} onConfirm={handleRename} onCancel={() => setRenaming(false)} />
         ) : (
-          <span style={{ fontSize: 12.5, color: isActive ? '#e5e5e5' : '#c9d1d9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, userSelect: 'none' }}>
+          <span style={{
+            fontSize: 12, color: isActive ? '#d4d4d4' : '#737373',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+            userSelect: 'none', letterSpacing: '0.01em', lineHeight: 1,
+          }}>
             {node.name}
           </span>
         )}
       </div>
 
-      {/* Inline create input */}
       {creating && (
-        <div style={{ paddingLeft: `${8 + (depth + 1) * 12}px`, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <FileIcon name={creating === 'file' ? 'new.ts' : ''} />
+        <div style={{ paddingLeft: `${6 + (depth + 1) * 14}px`, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <FileIcon name={creating === 'file' ? 'new.ts' : ''} isFolder={creating === 'folder'} />
           <InlineInput defaultValue="" onConfirm={handleCreate} onCancel={() => setCreating(null)} />
         </div>
       )}
 
-      {/* Children */}
       {isFolder && expanded && node.children && (
         <div>
           {node.children.map((child, i) => (
-            <TreeNode
-              key={child.path + i}
-              node={child}
-              depth={depth + 1}
-              onFileOpen={onFileOpen}
-              onRefresh={onRefresh}
-              onContextMenu={onContextMenu}
-              activeFilePath={activeFilePath}
-            />
+            <TreeNode key={child.path + i} node={child} depth={depth + 1}
+              onFileOpen={onFileOpen} onRefresh={onRefresh}
+              onContextMenu={onContextMenu} activeFilePath={activeFilePath} />
           ))}
         </div>
       )}
@@ -224,6 +234,8 @@ export default function FileExplorer() {
   const { workspaceName, fileTree, setFileTree, workspacePath, tabs, openTab, activeTabId } = useAppStore();
   const [ctxMenu, setCtxMenu] = useState<CtxMenu | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<FileNode | null>(null);
+  const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
 
   const activeFilePath = tabs.find(t => t.id === activeTabId)?.filePath ?? null;
 
@@ -231,7 +243,7 @@ export default function FileExplorer() {
     if (!workspacePath) return;
     const tree = await AsteriaAPI.readTree(workspacePath);
     setFileTree(tree);
-  }, [workspacePath]);
+  }, [workspacePath, setFileTree]);
 
   const handleFileOpen = async (node: FileNode) => {
     if (node.type !== 'file') return;
@@ -242,14 +254,7 @@ export default function FileExplorer() {
       py: 'python', rs: 'rust', go: 'go', json: 'json', md: 'markdown',
       css: 'css', scss: 'scss', html: 'html', yml: 'yaml', yaml: 'yaml',
     };
-    openTab({
-      id: node.path,
-      filePath: node.path,
-      fileName: node.name,
-      content: content || '',
-      isDirty: false,
-      language: langMap[ext] || 'plaintext',
-    });
+    openTab({ id: node.path, filePath: node.path, fileName: node.name, content: content || '', isDirty: false, language: langMap[ext] || 'plaintext' });
   };
 
   const handleContextAction = async (action: string, node: FileNode) => {
@@ -258,7 +263,6 @@ export default function FileExplorer() {
       case 'reveal': AsteriaAPI.revealInExplorer(node.path); break;
       case 'copyPath': navigator.clipboard.writeText(node.path); break;
       case 'delete': setDeleteTarget(node); break;
-      case 'rename': break; // handled inline
     }
   };
 
@@ -269,70 +273,107 @@ export default function FileExplorer() {
     refreshTree();
   };
 
-  if (!workspacePath) {
-    return (
-      <div style={{ padding: 16, color: '#374151', fontSize: 12, textAlign: 'center' }}>
-        No folder open
-      </div>
-    );
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', userSelect: 'none' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', userSelect: 'none', background: '#090909' }}>
       {/* Header */}
       <div style={{
-        padding: '8px 12px 6px', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em',
-        textTransform: 'uppercase', color: '#4b5563',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        padding: '8px 10px 7px',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexShrink: 0,
       }}>
-        <span>Explorer</span>
-        <button onClick={refreshTree} style={{ background: 'none', border: 'none', color: '#374151', cursor: 'pointer', padding: 2 }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-          </svg>
-        </button>
+        <span style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#333' }}>
+          Explorer
+        </span>
+        <div style={{ display: 'flex', gap: 2 }}>
+          {/* Search toggle */}
+          <button onClick={() => setShowSearch(p => !p)} title="Search files" style={{
+            background: showSearch ? 'rgba(255,255,255,0.06)' : 'none', border: 'none', color: '#2a2a2a',
+            cursor: 'pointer', padding: '3px 4px', borderRadius: 4, display: 'flex', alignItems: 'center',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#737373')}
+            onMouseLeave={e => (e.currentTarget.style.color = showSearch ? '#525252' : '#2a2a2a')}
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+          {/* Refresh */}
+          <button onClick={refreshTree} title="Refresh" style={{
+            background: 'none', border: 'none', color: '#2a2a2a',
+            cursor: 'pointer', padding: '3px 4px', borderRadius: 4, display: 'flex', alignItems: 'center',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#737373')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#2a2a2a')}
+          >
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* Workspace name */}
-      <div style={{ padding: '6px 8px 4px', fontSize: 11, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-        {workspaceName}
-      </div>
-
-      {/* Tree */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '2px 0 8px' }}>
-        {fileTree.map((node, i) => (
-          <TreeNode
-            key={node.path + i}
-            node={node}
-            depth={0}
-            onFileOpen={handleFileOpen}
-            onRefresh={refreshTree}
-            onContextMenu={(e, n) => setCtxMenu({ x: e.clientX, y: e.clientY, node: n })}
-            activeFilePath={activeFilePath}
+      {/* Search bar */}
+      {showSearch && (
+        <div style={{ padding: '6px 8px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Filter files…"
+            style={{
+              width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: 5, color: '#737373', fontSize: 11.5, padding: '4px 8px',
+              outline: 'none', fontFamily: 'Inter, system-ui, sans-serif', boxSizing: 'border-box',
+            }}
+            autoFocus
           />
-        ))}
-      </div>
-
-      {ctxMenu && (
-        <ContextMenu menu={ctxMenu} onClose={() => setCtxMenu(null)} onAction={handleContextAction} />
+        </div>
       )}
 
-      {/* Delete confirmation */}
+      {/* Workspace name */}
+      {workspaceName && (
+        <div style={{ padding: '6px 10px 3px', fontSize: 10.5, fontWeight: 600, color: '#2a2a2a', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          {workspaceName}
+        </div>
+      )}
+
+      {/* Tree */}
+      {!workspacePath ? (
+        <div style={{ padding: 16, color: '#1e1e1e', fontSize: 12, textAlign: 'center', lineHeight: 1.6 }}>
+          No folder open.<br />
+          <span style={{ fontSize: 11 }}>Open via Projects menu.</span>
+        </div>
+      ) : (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '3px 0 8px' }}>
+          {fileTree.map((node, i) => (
+            <TreeNode
+              key={node.path + i} node={node} depth={0}
+              onFileOpen={handleFileOpen} onRefresh={refreshTree}
+              onContextMenu={(e, n) => setCtxMenu({ x: e.clientX, y: e.clientY, node: n })}
+              activeFilePath={activeFilePath}
+            />
+          ))}
+        </div>
+      )}
+
+      {ctxMenu && <ContextMenu menu={ctxMenu} onClose={() => setCtxMenu(null)} onAction={handleContextAction} />}
+
+      {/* Delete dialog */}
       {deleteTarget && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 2000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{ background: '#111319', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 24, maxWidth: 360 }}>
-            <div style={{ fontSize: 14, color: '#e5e7eb', marginBottom: 8 }}>Delete "{deleteTarget.name}"?</div>
-            <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 20 }}>
-              {deleteTarget.type === 'folder' ? 'This will delete the folder and all its contents.' : 'This file will be permanently deleted.'}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+          <div style={{
+            background: 'rgba(14,14,14,0.98)', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 10, padding: 24, maxWidth: 340,
+            boxShadow: '0 24px 60px rgba(0,0,0,0.8)',
+          }}>
+            <div style={{ fontSize: 13.5, color: '#c4c4c4', marginBottom: 6, fontWeight: 500 }}>Delete "{deleteTarget.name}"?</div>
+            <div style={{ fontSize: 12, color: '#333', marginBottom: 22, lineHeight: 1.6 }}>
+              {deleteTarget.type === 'folder' ? 'This will permanently delete the folder and all its contents.' : 'This file will be permanently deleted.'}
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button onClick={() => setDeleteTarget(null)} style={{ padding: '6px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: '#9ca3af', borderRadius: 6, cursor: 'pointer' }}>Cancel</button>
-              <button onClick={confirmDelete} style={{ padding: '6px 16px', background: 'rgba(115,115,115,0.15)', border: '1px solid rgba(115,115,115,0.3)', color: '#737373', borderRadius: 6, cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: '6px 16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#525252', borderRadius: 6, cursor: 'pointer', fontSize: 12 }}>Cancel</button>
+              <button onClick={confirmDelete} style={{ padding: '6px 16px', background: 'rgba(127,29,29,0.3)', border: '1px solid rgba(127,29,29,0.4)', color: '#9ca3af', borderRadius: 6, cursor: 'pointer', fontSize: 12 }}>Delete</button>
             </div>
           </div>
         </div>

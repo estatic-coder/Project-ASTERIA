@@ -28,7 +28,7 @@ export class SearchService {
     return results;
   }
 
-  async searchSemantic(query: string): Promise<any[]> {
+  async searchSemantic(_query: string): Promise<any[]> {
     // Mocking semantic search behavior
     return [
       { file: 'src/components/OraclePanel.tsx', score: 0.95, snippet: 'Implement dark mode toggle...' },

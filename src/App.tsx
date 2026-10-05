@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { Component, ReactNode, useEffect, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAppStore } from './store/useAppStore';
 import { AsteriaAPI } from './core/AsteriaAPI';
@@ -11,12 +11,12 @@ import CodeEditor from './components/Editor';
 import OraclePanel from './components/OraclePanel';
 import TerminalPanel from './components/TerminalPanel';
 import CommandPalette from './components/CommandPalette';
+import ProjectDashboard from './components/ProjectDashboard';
 
-// bg images per mode
 const MODE_BG: Record<string, string> = {
-  code:     '/home_loading.png',
-  image:    '/img_creation.png',
-  analysis: '/hill.jpg',
+  home: '/home_loading.png',
+  code: '/code_loading.png',
+  image: '/img_creation.png',
 };
 
 // ─── Mode transition overlay ───────────────────────────────────────
@@ -26,7 +26,7 @@ function ModeTransition({ target, onDone }: { target: string; onDone: () => void
     return () => clearTimeout(t);
   }, [onDone]);
 
-  const bg = MODE_BG[target] || null;
+  const bg = MODE_BG[target] || '';
 
   return (
     <motion.div
@@ -36,21 +36,12 @@ function ModeTransition({ target, onDone }: { target: string; onDone: () => void
       transition={{ duration: 0.4 }}
       style={{
         position: 'fixed', inset: 0, zIndex: 9000,
-        background: '#080808',
+        background: bg ? `#080808 url(${bg}) center / auto 100% no-repeat` : '#080808',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16,
         overflow: 'hidden',
       }}
     >
-      {/* Translucent bg image */}
-      {bg && (
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `url(${bg})`,
-          backgroundSize: 'cover', backgroundPosition: 'center',
-          opacity: 0.18,
-          filter: 'grayscale(40%) brightness(0.5)',
-        }} />
-      )}
+
       {/* Dark overlay on top */}
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.72)' }} />
 
@@ -62,7 +53,7 @@ function ModeTransition({ target, onDone }: { target: string; onDone: () => void
       >
         <div style={{ fontSize: 10, letterSpacing: '0.25em', color: '#525252', marginBottom: 10, textTransform: 'uppercase' }}>Entering</div>
         <div style={{ fontSize: 26, fontWeight: 200, letterSpacing: '0.3em', background: 'linear-gradient(135deg, #e5e5e5, #737373)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          {target.toUpperCase()} MODE
+          {target === 'home' ? 'ASTERIA HOME' : `${target.toUpperCase()} MODE`}
         </div>
         <motion.div
           initial={{ width: 0 }}
@@ -77,75 +68,97 @@ function ModeTransition({ target, onDone }: { target: string; onDone: () => void
 
 // ─── Code Mode layout ─────────────────────────────────────────────
 function CodeMode({ onSettings, onCommandPalette }: { onSettings: () => void; onCommandPalette: () => void }) {
-  const { sidebarOpen, oraclePanelOpen, terminalOpen, setSidebarOpen, setOraclePanelOpen, setTerminalOpen } = useAppStore();
-  const SIDEBAR_W = sidebarOpen ? 230 : 0;
+  const { sidebarOpen, oraclePanelOpen, terminalOpen, setSidebarOpen, setOraclePanelOpen, setTerminalOpen, workspacePath } = useAppStore();
+  const SIDEBAR_W = sidebarOpen ? 236 : 0;
   const ORACLE_W = oraclePanelOpen ? 360 : 0;
   const TERMINAL_H = terminalOpen ? 220 : 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0e0e0e', overflow: 'hidden' }}>
-      <CodeTopBar
-        onOpenSettings={onSettings}
-        onCommandPalette={onCommandPalette}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        onToggleOracle={() => setOraclePanelOpen(!oraclePanelOpen)}
-        onToggleTerminal={() => setTerminalOpen(!terminalOpen)}
-      />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0c0c0c', overflow: 'hidden' }}>
+      {workspacePath && (
+        <CodeTopBar
+          onOpenSettings={onSettings}
+          onCommandPalette={onCommandPalette}
+          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onToggleOracle={() => setOraclePanelOpen(!oraclePanelOpen)}
+          onToggleTerminal={() => setTerminalOpen(!terminalOpen)}
+          sidebarOpen={sidebarOpen}
+          oraclePanelOpen={oraclePanelOpen}
+          terminalOpen={terminalOpen}
+        />
+      )}
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* Sidebar */}
-        <motion.div
-          animate={{ width: SIDEBAR_W }}
-          transition={{ duration: 0.2, ease: 'easeInOut' }}
-          style={{ height: '100%', overflow: 'hidden', background: '#0a0a0a', borderRight: '1px solid rgba(255,255,255,0.05)', flexShrink: 0 }}
-        >
-          {sidebarOpen && <FileExplorer />}
-        </motion.div>
+        {workspacePath ? (
+          <>
+            {/* Sidebar */}
+            <motion.div
+              animate={{ width: SIDEBAR_W }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              style={{ height: '100%', overflow: 'hidden', background: '#090909', borderRight: '1px solid rgba(255,255,255,0.04)', flexShrink: 0 }}
+            >
+              {sidebarOpen && <FileExplorer />}
+            </motion.div>
 
-        {/* Editor + Terminal */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <CodeEditor />
+            {/* Editor + Terminal */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <div style={{ flex: 1, overflow: 'hidden' }}>
+                <CodeEditor />
+              </div>
+              <motion.div
+                animate={{ height: TERMINAL_H }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                style={{ overflow: 'hidden', flexShrink: 0 }}
+              >
+                {terminalOpen && <TerminalPanel />}
+              </motion.div>
+            </div>
+          </>
+        ) : (
+          <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+            <ProjectDashboard />
           </div>
-          <motion.div
-            animate={{ height: TERMINAL_H }}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden', flexShrink: 0 }}
-          >
-            {terminalOpen && <TerminalPanel />}
-          </motion.div>
-        </div>
+        )}
 
         {/* Oracle panel */}
         <motion.div
           animate={{ width: ORACLE_W }}
           transition={{ duration: 0.2, ease: 'easeInOut' }}
-          style={{ height: '100%', overflow: 'hidden', flexShrink: 0 }}
+          style={{ height: '100%', overflow: 'hidden', flexShrink: 0, borderLeft: '1px solid rgba(255,255,255,0.04)' }}
         >
           {oraclePanelOpen && <OraclePanel />}
         </motion.div>
       </div>
 
       {/* Status bar */}
-      <div style={{
-        height: 24, background: '#0a0a0a', borderTop: '1px solid rgba(255,255,255,0.05)',
-        display: 'flex', alignItems: 'center', padding: '0 14px', gap: 16,
-        fontSize: 11, color: '#333', flexShrink: 0,
-      }}>
-        <img src="/logo.png" alt="" style={{ width: 12, height: 12, objectFit: 'contain', filter: 'grayscale(100%) brightness(1.5)', opacity: 0.5 }} />
-        <span style={{ color: '#525252' }}>ASTERIA</span>
-        <span>CODE MODE</span>
-        <span style={{ marginLeft: 'auto', display: 'flex', gap: 12 }}>
-          <span style={{ color: '#737373' }}>● LOCAL</span>
-          <span>Ollama</span>
-        </span>
-      </div>
+      {workspacePath && (
+        <div style={{
+          height: 21, background: '#070707',
+          borderTop: '1px solid rgba(255,255,255,0.04)',
+          display: 'flex', alignItems: 'center', padding: '0 12px',
+          flexShrink: 0,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+            <img src="/logo.png" alt="" style={{ width: 10, height: 10, objectFit: 'contain', filter: 'grayscale(100%) brightness(1.3)', opacity: 0.3 }} />
+            <span style={{ fontSize: 9.5, color: '#222', letterSpacing: '0.16em' }}>ASTERIA</span>
+            <div style={{ width: 1, height: 9, background: 'rgba(255,255,255,0.05)' }} />
+            <span style={{ fontSize: 9.5, color: '#1c1c1c', letterSpacing: '0.12em' }}>CODE</span>
+          </div>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 9.5, color: '#181818', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 3.5, height: 3.5, borderRadius: '50%', background: '#242424', display: 'inline-block' }} />
+              LOCAL
+            </span>
+            <span style={{ fontSize: 9.5, color: '#141414' }}>Ollama</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── Image Mode layout ────────────────────────────────────────────
-function ImageMode({ onBack }: { onBack: () => void }) {
+function ImageMode({ onCommandPalette }: { onCommandPalette: () => void }) {
   const { availableModels, currentModel, setCurrentModel } = useAppStore();
   const [prompt, setPrompt] = useState('');
   const [negPrompt, setNegPrompt] = useState('');
@@ -235,9 +248,14 @@ function ImageMode({ onBack }: { onBack: () => void }) {
             {serverStatus === 'ready' ? 'SDXL READY' : serverStatus === 'loading' ? 'LOADING MODEL' : serverStatus === 'checking' ? 'CONNECTING' : 'SERVER OFFLINE'}
           </span>
         </div>
-        <button onClick={onBack} style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 7, padding: '5px 13px', color: '#737373', fontSize: 12, cursor: 'pointer' }}
-          onMouseEnter={e => e.currentTarget.style.color = '#a3a3a3'}
-          onMouseLeave={e => e.currentTarget.style.color = '#737373'}>← Home</button>
+        <button onClick={onCommandPalette} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', cursor: 'pointer', color: '#525252', padding: '5px 6px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6 }}
+          title="Command Palette (⌘⇧P)"
+          onMouseEnter={e => { e.currentTarget.style.color = '#c4c4c4'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#525252'; e.currentTarget.style.background = 'transparent'; }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+        </button>
       </div>
 
       {/* Main layout */}
@@ -424,10 +442,8 @@ export default function App() {
 
   useEffect(() => {
     const unsub = useAppStore.subscribe((state, prev) => {
-      if (state.mode !== prev.mode && state.mode !== 'home') {
+      if (state.mode !== prev.mode) {
         setTransitionTarget(state.mode);
-      } else if (state.mode !== prev.mode) {
-        setActiveMode(state.mode);
       }
     });
     return unsub;
@@ -447,7 +463,6 @@ export default function App() {
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'h') {
         e.preventDefault();
         setMode('home');
-        setActiveMode('home');
       }
     };
     window.addEventListener('keydown', handler);
@@ -480,20 +495,7 @@ export default function App() {
 
       {activeMode === 'image' && (
         <motion.div key="image" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ width: '100%', height: '100%' }}>
-          <ImageMode onBack={() => { setMode('home'); setActiveMode('home'); }} />
-        </motion.div>
-      )}
-
-      {activeMode === 'analysis' && (
-        <motion.div key="analysis" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ width: '100%', height: '100%' }}>
-          <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#0e0e0e' }}>
-            <div style={{ height: 48, background: '#0a0a0a', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12 }}>
-              <img src="/logo.png" alt="" style={{ width: 20, height: 20, filter: 'grayscale(100%) brightness(1.6)' }} />
-              <span style={{ fontSize: 11, color: '#525252', letterSpacing: '0.12em' }}>ANALYSIS MODE</span>
-              <button onClick={() => { setMode('home'); setActiveMode('home'); }} style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 7, padding: '5px 13px', color: '#737373', fontSize: 12, cursor: 'pointer' }}>← Home</button>
-            </div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#525252', fontSize: 13 }}>Analysis mode — coming soon</div>
-          </div>
+          <ImageMode onCommandPalette={() => setShowCommandPalette(true)} />
         </motion.div>
       )}
 

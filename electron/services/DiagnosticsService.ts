@@ -1,10 +1,7 @@
-import { FileSystemService } from './FileSystemService';
+
 
 export class DiagnosticsService {
-  private workspacePath: string;
-
-  constructor(workspacePath: string) {
-    this.workspacePath = workspacePath;
+  constructor(_workspacePath: string) {
   }
 
   async getDiagnostics(): Promise<any[]> {

@@ -27,7 +27,7 @@ export class OllamaService {
         });
       });
 
-      req.on('error', (e) => {
+      req.on('error', (_e) => {
         resolve({ success: false, error: 'Ollama is not running or not reachable at ' + this.baseUrl });
       });
 

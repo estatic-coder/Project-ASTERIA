@@ -8,7 +8,7 @@ type Phase = typeof PHASES[number];
 export default function SplashScreen({ onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('enter');
   const [progress, setProgress] = useState(0);
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     // Smooth easing progress
@@ -73,6 +73,10 @@ export default function SplashScreen({ onComplete }: Props) {
           0%, 100% { opacity: 1; }
           50%       { opacity: 0; }
         }
+        @keyframes splash-bg-pulse {
+          0%, 100% { transform: scale(1); filter: brightness(1); }
+          50% { transform: scale(1.05); filter: brightness(1.2); }
+        }
       `}</style>
 
       <div style={{
@@ -120,37 +124,41 @@ export default function SplashScreen({ onComplete }: Props) {
 
           {/* Logo */}
           <div style={{
-            width: 100, height: 100,
+            width: 140, height: 140,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             marginBottom: 20,
-            animation: isVisible ? 'splash-logo-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none',
+            animation: isVisible ? 'splash-logo-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none',
             opacity: isVisible ? undefined : 0,
+            position: 'relative', zIndex: 10,
           }}>
             <img
               src="/logo.png"
               alt=""
               style={{
                 width: '100%', height: '100%', objectFit: 'contain',
-                filter: 'grayscale(100%) brightness(1.8) drop-shadow(0 0 30px rgba(255,255,255,0.3))',
+                filter: 'grayscale(100%) brightness(2.2) drop-shadow(0 0 40px rgba(255,255,255,0.4))',
               }}
             />
           </div>
 
           {/* Title */}
           <div style={{
-            animation: isVisible ? 'splash-title-in 1.1s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both' : 'none',
+            animation: isVisible ? 'splash-title-in 1.3s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both' : 'none',
             opacity: isVisible ? undefined : 0,
+            position: 'relative',
+            marginTop: -10, // Bring it closer to logo
           }}>
             <span style={{
-              fontSize: 56, fontWeight: 800,
-              letterSpacing: '0.25em',
+              fontSize: 68, fontWeight: 900,
+              letterSpacing: '0.35em',
               textTransform: 'uppercase',
-              background: 'linear-gradient(180deg, #ffffff 0%, #888888 100%)',
+              background: 'linear-gradient(180deg, #ffffff 0%, #666666 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', system-ui, sans-serif",
               display: 'block',
               textAlign: 'center',
+              textShadow: '0 10px 40px rgba(255,255,255,0.1)'
             }}>
               Asteria
             </span>

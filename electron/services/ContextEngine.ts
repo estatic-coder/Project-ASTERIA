@@ -2,10 +2,7 @@ import { FileSystemService } from './FileSystemService';
 
 export class ContextEngine {
   private fileSystem: FileSystemService;
-  private workspacePath: string;
-
   constructor(workspacePath: string) {
-    this.workspacePath = workspacePath;
     this.fileSystem = new FileSystemService(workspacePath);
   }
 
